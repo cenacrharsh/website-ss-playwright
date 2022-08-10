@@ -13,39 +13,47 @@
     <button id="send">Send Request</button>
 
     <script>
-      let sendButton = document.getElementById("send");
-      let imgDiv = document.getElementById("imgdiv");
+        let sendButton = document.getElementById("send")
+        let imgDiv = document.getElementById("imgdiv")
 
-      sendButton.addEventListener("click", () => {
-        let request = new XMLHttpRequest();
-        request.open("POST", "http://localhost:8000/get-screenshot");
-        request.setRequestHeader("Content-Type", "application/json");
+        sendButton.addEventListener("click", () => {
 
-        // let payload = { asin: ["B09NSW34G8", "B017NPCSLI", "B08L5FM4JC"] }
-        let payload = { asin: ["B09NSW34G8"] };
+            imgDiv.innerText = "Loading..."
 
-        request.send(JSON.stringify(payload));
+            let request = new XMLHttpRequest();
+            request.open("POST", "http://localhost:8000/get-screenshot")
+            request.setRequestHeader("Content-Type", "application/json");
 
-        request.addEventListener("load", () => {
-          let data = JSON.parse(request.response);
-          let allImages = data.imageURLs;
+            // let payload = { asin: ["B09NSW34G8", "B017NPCSLI", "B08L5FM4JC"] }
+            // let payload = { asin: ["B09NSW34G8", "B017NPCSLI"] }
+            let payload = { asin: ["B09NSW34G8"] }
 
-          allImages.forEach((item) => {
-            console.log(item);
-            let buffer = item.data;
-            // console.log(buffer)
+            request.send(JSON.stringify(payload));
 
-            let img = document.createElement("img");
-            img.setAttribute("height", "500px");
-            var arrayBufferView = new Uint8Array(buffer);
-            var blob = new Blob([arrayBufferView], { type: "image/jpeg" });
-            var urlCreator = window.URL || window.webkitURL;
-            var imageUrl = urlCreator.createObjectURL(blob);
-            img.src = imageUrl;
-            imgDiv.appendChild(img);
-          });
-        });
-      });
+            request.addEventListener("load", () => {
+                imgDiv.innerHTML="";
+                let data = JSON.parse(request.response)
+                let allImages = data.imageURLs
+
+                allImages.forEach((item) => {
+                    console.log(item)
+                    let buffer = item.data;
+                    // console.log(buffer)
+
+                    let img = document.createElement("img")
+                    img.setAttribute("height", "500px");
+                    var arrayBufferView = new Uint8Array(buffer);
+                    var blob = new Blob([arrayBufferView], { type: "image/jpeg" });
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL(blob);
+                    img.src = imageUrl
+                    imgDiv.appendChild(img);
+                })
+
+
+            })
+
+        })
     </script>
   </body>
 </html>
